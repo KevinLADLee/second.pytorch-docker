@@ -27,17 +27,24 @@ RUN rm -rf /var/lib/apt/lists/* \
     apt-get autoremove && \
     rm -rf /var/lib/apt/lists/* /tmp/* ~/*
 
-RUN wget -qc https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz && \
+RUN wget -qc https://tukaani.org/xz/xz-5.2.3.tar.gz && \
+    tar zxf xz-5.2.3.tar.gz && \
+    cd xz-5.2.3 && \
+    ./configure --prefix /opt/xz && \
+    make -j8 && \
+    make install && \
+    cd .. && \
+    wget -qc https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz && \
     tar xf Python-3.6.5.tgz && \
     cd Python-3.6.5 && \
-    ./configure --prefix=/usr/local/lib/python3.6 && \
+    ./configure --prefix=/usr/local/lib/python3.6 LDFLAGS="-L/opt/xz/lib" CPPFLAGS="-I/opt/xz/include" && \
     make -j8 && \
     make install -j8 && \
-    ln -s /usr/local/lib/python3.6/bin/python3.6 /usr/bin/python3.6 && \
-    ln -s /usr/local/lib/python3.6/bin/pip3.6 /usr/bin/pip3.6 && \
-    ln -s /usr/bin/python3.6 /usr/local/bin/python3 && \
-    ln -s /usr/bin/python3.6 /usr/local/bin/python && \
-    rm -rf Python-3.6.5.tgz Python-3.6.5   
+    ln -sf /usr/local/lib/python3.6/bin/python3.6 /usr/bin/python3.6 && \
+    ln -sf /usr/local/lib/python3.6/bin/pip3.6 /usr/bin/pip3.6 && \
+    ln -sf /usr/bin/python3.6 /usr/local/bin/python3 && \
+    ln -sf /usr/bin/python3.6 /usr/local/bin/python && \
+    rm -rf Python-3.6.5.tgz Python-3.6.5 xz-5.2.3.tar.gz xz-5.2.3  
 
 RUN wget -qc https://cmake.org/files/v3.13/cmake-3.13.2-Linux-x86_64.tar.gz && \
     tar zxf cmake-3.13.2-Linux-x86_64.tar.gz && \
@@ -61,8 +68,13 @@ RUN cd spconv && \
     python setup.py bdist_wheel && \
     python -m pip install ./dist/spconv-1.1-cp36-cp36m-linux_x86_64.whl && \
     echo "export PYTHONPATH=$PYTHONPATH:/root/second.pytorch/ " >> ~/.bashrc
-    
-VOLUME [ "/dataset" ]
+
+ENV NUMBAPRO_CUDA_DRIVER=/usr/lib/x86_64-linux-gnu/libcuda.so
+ENV NUMBAPRO_NVVM=/usr/local/cuda/nvvm/lib64/libnvvm.so
+ENV NUMBAPRO_LIBDEVICE=/usr/local/cuda/nvvm/libdevice
+
+VOLUME [ "/root/dataset" ]
+VOLUME [ "/root/data"]
 
 EXPOSE 8888
 
@@ -71,3 +83,12 @@ CMD ["/bin/bash"]
 # Test
 # docker run -it --rm -p 8888:8888 kevinlad/second.pytorch:latest
 # > python -m jupyter notebook --port 8888 --no-browser --ip=0.0.0.0 --allow-root" ]
+
+# data
+#   - config/all.fhd.config
+#   - model_voxenet/ss_100
+# dataset
+#   - nuscene
+#     - v1.0-trainval
+#     - v1.0-mini
+#   - kitti  
