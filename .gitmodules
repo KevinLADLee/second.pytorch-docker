@@ -1,0 +1,6 @@
+[submodule "home/second.pytorch"]
+	path = home/second.pytorch
+	url = https://github.com/traveller59/second.pytorch
+[submodule "home/spconv"]
+	path = home/spconv
+	url = https://github.com/traveller59/spconv
