@@ -77,22 +77,11 @@ ENV NUMBAPRO_CUDA_DRIVER=/usr/lib/x86_64-linux-gnu/libcuda.so
 ENV NUMBAPRO_NVVM=/usr/local/cuda/nvvm/lib64/libnvvm.so
 ENV NUMBAPRO_LIBDEVICE=/usr/local/cuda/nvvm/libdevice
 
-VOLUME [ "/root/dataset" ]
-VOLUME [ "/root/data"]
+VOLUME [ "/home/torcher/data"]
 
+EXPOSE 8000
 EXPOSE 8888
+EXPOSE 16666
 
 CMD ["/bin/bash"]
 
-# Test
-# docker run -it --rm -p 8888:8888 kevinlad/second.pytorch:latest
-# > python -m jupyter notebook --port 8888 --no-browser --ip=0.0.0.0 --allow-root" ]
-
-# data
-#   - config/all.fhd.config
-#   - model_voxenet/ss_100
-# dataset
-#   - nuscene
-#     - v1.0-trainval
-#     - v1.0-mini
-#   - kitti  
